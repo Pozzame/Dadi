@@ -11,7 +11,6 @@ while (playerUmano >= 0 && playerPC >=0)
     int lancio2PUmano = rng.Next(1,7);
     Console.WriteLine("Premi invio per lanciare i dadi");
     Console.ReadLine();
-    //char ok = Console.ReadKey(true).KeyChar;
     Console.Clear();
     Console.WriteLine($"Hai fatto: {lancio1PUmano} e {lancio2PUmano}");
     int lancioPUmano = lancio1PUmano + lancio2PUmano;
