@@ -4,36 +4,36 @@ Random rng = new Random();
 int lanci = 0;
 
 Console.Clear();
-while (playerUmano >= 0 && playerPC >=0)
+while (playerUmano > 0 && playerPC > 0)
 {
     Console.WriteLine($"Lancio numero: {++lanci}"); //Contatore turno
 
      //Lancio umano
     Console.WriteLine("Lancia i dadi");
     Console.ReadKey();
-    int lancio1PUmano = rng.Next(1,7);
-    int lancio2PUmano = rng.Next(1,7);
-    int lancioPUmano = lancio1PUmano + lancio2PUmano;
+    int lancio1Umano = rng.Next(1,7);
+    int lancio2Umano = rng.Next(1,7);
+    int lancioUmano =  + lancio2Umano;
     Console.Clear();
-    Console.WriteLine($"Hai fatto: {lancio1PUmano} e {lancio2PUmano}");
+    Console.WriteLine($"Hai fatto: {lancio1Umano} e {lancio2Umano}");
     //
 
     //Lancio PC
-    int lancio1PPC = rng.Next(1,7); 
-    int lancio2PPC = rng.Next(1,7);
-    int lancioPPC = lancio1PPC + lancio2PPC;
-    Console.WriteLine($"Il PC ha fatto: {lancio1PPC} e {lancio2PPC}");
+    int lancio1PC = rng.Next(1,7); 
+    int lancio2PC = rng.Next(1,7);
+    int lancioPC = lancio1PC + lancio2PC;
+    Console.WriteLine($"Il PC ha fatto: {lancio1PC} e {lancio2PC}");
     //
 
-    if (lancioPUmano < lancioPPC) //Se vince PC
+    if (lancioUmano < lancioPC) //Se vince PC
     {
         Console.WriteLine("Il PC vince!");
-        playerUmano -= lancioPPC - lancioPUmano; //Aggiorno punteggio
+        playerUmano -= lancioPC - lancioUmano; //Aggiorno punteggio
     } 
-    else if (lancioPUmano > lancioPPC) //Se vince umano
+    else if (lancioUmano > lancioPC) //Se vince umano
     {
         Console.WriteLine("Hai vinto!");
-        playerPC -= lancioPUmano - lancioPPC; //Aggiorno punteggio
+        playerPC -= lancioUmano - lancioPC; //Aggiorno punteggio
     }
     else Console.WriteLine("Pari!"); //Se pari
 
