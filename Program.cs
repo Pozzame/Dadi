@@ -1,45 +1,45 @@
-﻿int playerUmano = 100;
+﻿int playerHuman = 100;
 int playerPC = 100;
 Random rng = new Random();
-int lanci = 0;
+int launch = 0;
 
 Console.Clear();
-while (playerUmano > 0 && playerPC > 0)
+while (playerHuman > 0 && playerPC > 0)
 {
-    Console.WriteLine($"Lancio numero: {++lanci}"); //Contatore turno
+    Console.WriteLine($"Launch number: {++launch}"); //Contatore turno
 
-     //Lancio umano
-    Console.WriteLine("Lancia i dadi");
+     //launch Human
+    Console.WriteLine("Launch dice");
     Console.ReadKey();
-    int lancio1Umano = rng.Next(1,7);
-    int lancio2Umano = rng.Next(1,7);
-    int lancioUmano =  + lancio2Umano;
+    int launch1Human = rng.Next(1,7);
+    int launch2Human = rng.Next(1,7);
+    int launchHuman = launch1Human + launch2Human;
     Console.Clear();
-    Console.WriteLine($"Hai fatto: {lancio1Umano} e {lancio2Umano}");
+    Console.WriteLine($"Yuo have got: {launch1Human} e {launch2Human}");
     //
 
-    //Lancio PC
-    int lancio1PC = rng.Next(1,7); 
-    int lancio2PC = rng.Next(1,7);
-    int lancioPC = lancio1PC + lancio2PC;
-    Console.WriteLine($"Il PC ha fatto: {lancio1PC} e {lancio2PC}");
+    //launch PC
+    int launch1PC = rng.Next(1,7); 
+    int launch2PC = rng.Next(1,7);
+    int launchPC = launch1PC + launch2PC;
+    Console.WriteLine($"PC have got: {launch1PC} e {launch2PC}");
     //
 
-    if (lancioUmano < lancioPC) //Se vince PC
+    if (launchHuman < launchPC) //Se vince PC
     {
-        Console.WriteLine("Il PC vince!");
-        playerUmano -= lancioPC - lancioUmano; //Aggiorno punteggio
+        Console.WriteLine("PC won!");
+        playerHuman -= launchPC - launchHuman; //Aggiorno punteggio
     } 
-    else if (lancioUmano > lancioPC) //Se vince umano
+    else if (launchHuman > launchPC) //Se vince Human
     {
-        Console.WriteLine("Hai vinto!");
-        playerPC -= lancioUmano - lancioPC; //Aggiorno punteggio
+        Console.WriteLine("You won!");
+        playerPC -= launchHuman - launchPC; //Aggiorno punteggio
     }
-    else Console.WriteLine("Pari!"); //Se pari
+    else Console.WriteLine("Even!"); //Se pari
 
-    Console.WriteLine($"Punteggio giocatore: {playerUmano}\nPunteggio PC: {playerPC}\n"); //Visualizza punteggio parziale
+    Console.WriteLine($"Player points: {playerHuman}\nPC points: {playerPC}\n"); //Visualizza punteggio parziale
     Thread.Sleep(500);
 }
-if (playerUmano < playerPC ) //Visualizza punteggio finale
-    Console.WriteLine($"Hai perso!\nIl PC ha vinto in {lanci} tiri con un vantaggio di {playerPC-playerUmano} punti!");
-    else Console.WriteLine($"Hai vinto in {lanci} tiri con un vantaggio di {playerUmano-playerPC} punti!");
+if (playerHuman < playerPC ) //Visualizza punteggio finale
+    Console.WriteLine($"You lost!\nPC win in {launch} lounches con un vantaggio di {playerPC-playerHuman} punti!");
+    else Console.WriteLine($"Hai vinto in {launch} tiri con un vantaggio di {playerHuman-playerPC} punti!");
