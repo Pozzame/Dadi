@@ -1,4 +1,6 @@
-﻿int playerHuman = 100;
+﻿using Spectre.Console;
+
+int playerHuman = 100;
 int playerPC = 100;
 Random rng = new Random();
 int launch = 0;
@@ -37,8 +39,15 @@ while (playerHuman > 0 && playerPC > 0)
     }
     else Console.WriteLine("Even!"); //Se pari
 
+/*
     Console.WriteLine($"Player points: {playerHuman}\nPC points: {playerPC}\n"); //Visualizza punteggio parziale
     Thread.Sleep(500);
+*/
+    AnsiConsole.Write(new BarChart()
+    .Width(60)
+    .AddItem("Player points:", playerHuman, Color.Yellow)
+    .AddItem("PC points:", playerPC, Color.Green));
+    Console.WriteLine();
 }
 if (playerHuman < playerPC ) //Visualizza punteggio finale
     Console.WriteLine($"You lost!\nPC win in {launch} lounches con un vantaggio di {playerPC-playerHuman} punti!");
