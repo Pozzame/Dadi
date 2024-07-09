@@ -43,7 +43,7 @@ while (playerHuman > 0 && playerPC > 0)
     Console.WriteLine($"Player points: {playerHuman}\nPC points: {playerPC}\n"); //Visualizza punteggio parziale
     Thread.Sleep(500);
 */
-    AnsiConsole.Write(new BarChart()
+    AnsiConsole.Write(new BarChart() //Visualizza punteggio parziale
     .Width(60)
     .AddItem("Player points:", playerHuman, Color.Yellow)
     .AddItem("PC points:", playerPC, Color.Green));
