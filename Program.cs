@@ -1,5 +1,5 @@
 ﻿using Spectre.Console;
-//Inizializzo vriabili
+//Inizializzo variabili
 Random rng = new Random();
 string path = @"Punteggio.txt";
 int playerHuman = 100;
@@ -9,8 +9,7 @@ int human = 0;
 int PC = 0;
 //
 
-//Carico stato da file se presente
-if (File.Exists(path))
+if (File.Exists(path)) //Carico stato da file se presente
 {
     string[] punteggio = File.ReadAllLines(path);
     playerHuman = Convert.ToInt32(punteggio[0]);
@@ -57,14 +56,12 @@ while (playerHuman > 0 && playerPC > 0) //Finchè un giocatore non vince
     }
     else Console.WriteLine("Even!"); //Se pari
 
-    // Salvo stato su file dopo ogni lancio
-    File.WriteAllLines(path, [playerHuman.ToString(), playerPC.ToString(), launch.ToString(), human.ToString(), PC.ToString()]);
-    //
+    File.WriteAllLines(path, [playerHuman.ToString(), playerPC.ToString(), launch.ToString(), human.ToString(), PC.ToString()]); // Salvo stato su file dopo ogni lancio
 
     AnsiConsole.Write(new BarChart() //Visualizza barre punteggio parziale
-    .Width(60)
-    .AddItem("Player points:", playerHuman, Color.Yellow)
-    .AddItem("PC points:", playerPC, Color.Green));
+        .Width(60)
+        .AddItem("Player points:", playerHuman, Color.Yellow)
+        .AddItem("PC points:", playerPC, Color.Green));
     Console.WriteLine();
 }
 
