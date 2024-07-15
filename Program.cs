@@ -1,5 +1,5 @@
 ﻿using Spectre.Console;
-
+//Inizializzo vriabili
 Random rng = new Random();
 string path = @"Punteggio.txt";
 int playerHuman = 100;
@@ -7,6 +7,9 @@ int playerPC = 100;
 int launch = 0;
 int human = 0;
 int PC = 0;
+//
+
+//Carico stato da file se presente
 if (File.Exists(path))
 {
     string[] punteggio = File.ReadAllLines(path);
@@ -16,11 +19,12 @@ if (File.Exists(path))
     human = Convert.ToInt32(punteggio[3]);
     PC = Convert.ToInt32(punteggio[4]);
 }
-else
+else //Creo file inizializzato a zero se non presente
     File.WriteAllLines(path, [playerHuman.ToString(), playerPC.ToString(), launch.ToString(), human.ToString(), PC.ToString()]);
 
+// Inizio gioco
 Console.Clear();
-while (playerHuman > 0 && playerPC > 0)
+while (playerHuman > 0 && playerPC > 0) //Finchè un giocatore non vince
 {
     Console.WriteLine($"Launch number: {++launch}"); //Contatore turno
 
@@ -46,31 +50,34 @@ while (playerHuman > 0 && playerPC > 0)
         Console.WriteLine("PC won!");
         playerHuman -= launchPC - launchHuman; //Aggiorno punteggio
     }
-    else if (launchHuman > launchPC) //Se vince Human
+    else if (launchHuman > launchPC) //Se vince umano
     {
         Console.WriteLine("You won!");
         playerPC -= launchHuman - launchPC; //Aggiorno punteggio
     }
     else Console.WriteLine("Even!"); //Se pari
-    File.WriteAllLines(path, [playerHuman.ToString(), playerPC.ToString(), launch.ToString(), human.ToString(), PC.ToString()]);
 
-    AnsiConsole.Write(new BarChart() //Visualizza punteggio parziale
+    // Salvo stato su file dopo ogni lancio
+    File.WriteAllLines(path, [playerHuman.ToString(), playerPC.ToString(), launch.ToString(), human.ToString(), PC.ToString()]);
+    //
+
+    AnsiConsole.Write(new BarChart() //Visualizza barre punteggio parziale
     .Width(60)
     .AddItem("Player points:", playerHuman, Color.Yellow)
     .AddItem("PC points:", playerPC, Color.Green));
     Console.WriteLine();
 }
+
 if (playerHuman < playerPC) //Visualizza punteggio finale
 {
     Console.WriteLine($"Hai perso!\nPC vince in {launch} lanci con un vantaggio di {playerPC - playerHuman} punti!");
     PC++;
-    File.WriteAllLines(path, ["100", "100", "0", human.ToString(), PC.ToString()]);
-    Console.WriteLine($"{PC} a {human}");
 }
 else
 {
     Console.WriteLine($"Hai vinto in {launch} tiri con un vantaggio di {playerHuman - playerPC} punti!");
     human++;
-    File.WriteAllLines(path, ["100", "100", "0", human.ToString(), PC.ToString()]);
-    Console.WriteLine($"{human} a {PC}");
 }
+
+File.WriteAllLines(path, ["100", "100", "0", human.ToString(), PC.ToString()]); //Resetto partita e salvo complessivo
+Console.WriteLine($"PC: {PC}\tUmano: {human}");
