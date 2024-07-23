@@ -1,7 +1,7 @@
 ﻿using Spectre.Console;
 public class Program
 {
-    public void Main()
+    public static void Main()
     {
         //Inizializzo variabili
         Random rng = new Random();
@@ -13,7 +13,8 @@ public class Program
         int PC = 0;
         //
 
-        if (File.Exists(path)) //Carico stato da file se presente
+        Console.Clear();
+        try
         {
             string[] punteggio = File.ReadAllLines(path);
             playerHuman = Convert.ToInt32(punteggio[0]);
@@ -22,11 +23,35 @@ public class Program
             human = Convert.ToInt32(punteggio[3]);
             PC = Convert.ToInt32(punteggio[4]);
         }
-        else //Creo file inizializzato a zero se non presente
+        catch (Exception ex) when (ex is FormatException ||
+                                    ex is IndexOutOfRangeException ||
+                                    ex is OverflowException)
+        {
+            Console.WriteLine("Formato file errato. Rigenero...");
+            File.Delete(path);
             File.WriteAllLines(path, [playerHuman.ToString(), playerPC.ToString(), launch.ToString(), human.ToString(), PC.ToString()]);
+        }
+        catch (Exception ex) when (ex is IOException ||
+                                    ex is NotSupportedException ||
+                                    ex is DirectoryNotFoundException)
+        {
+            Console.WriteLine("Problemi di accesso al file. Rigenero...");
+            File.Delete(path);
+            File.WriteAllLines(path, [playerHuman.ToString(), playerPC.ToString(), launch.ToString(), human.ToString(), PC.ToString()]);
+        }
+        catch (FileNotFoundException) //Creo file inizializzato a zero se non presente
+        {
+            File.WriteAllLines(path, [playerHuman.ToString(), playerPC.ToString(), launch.ToString(), human.ToString(), PC.ToString()]);
+        }
+        catch
+        {
+            Console.WriteLine("Errore non previsto. Rigenero...");
+            File.Delete(path);
+            File.WriteAllLines(path, [playerHuman.ToString(), playerPC.ToString(), launch.ToString(), human.ToString(), PC.ToString()]);
+        }
 
         // Inizio gioco
-        Console.Clear();
+
         while (playerHuman > 0 && playerPC > 0) //Finchè un giocatore non vince
         {
             Console.WriteLine($"Launch number: {++launch}"); //Contatore turno
