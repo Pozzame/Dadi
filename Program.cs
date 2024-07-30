@@ -1,111 +1,141 @@
-﻿using Spectre.Console;
+﻿using Newtonsoft.Json;
+using Spectre.Console;
 public class Program
 {
     public static void Main()
     {
-        //Inizializzo variabili
         Random rng = new Random();
-        string path = @"Punteggio.txt";
-        int playerHuman = 100;
-        int playerPC = 100;
-        int launch = 0;
-        int human = 0;
-        int PC = 0;
-        //
+        string path = @"Z:\MP\Punteggio.json";
+
+        string player = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .Title("-----Select player-----")
+                .PageSize(3)
+                .MoreChoicesText("[grey](Move up and down to select)[/]")
+                .AddChoices(new[] {
+            "1", "2", "Exit"}));
+        
+        if (player == "Exit") return;
 
         Console.Clear();
-        try
-        {
-            string[] punteggio = File.ReadAllLines(path);
-            playerHuman = Convert.ToInt32(punteggio[0]);
-            playerPC = Convert.ToInt32(punteggio[1]);
-            launch = Convert.ToInt32(punteggio[2]);
-            human = Convert.ToInt32(punteggio[3]);
-            PC = Convert.ToInt32(punteggio[4]);
-        }
-        catch (Exception ex) when (ex is FormatException ||
-                                    ex is IndexOutOfRangeException ||
-                                    ex is OverflowException)
-        {
-            Console.WriteLine("Formato file errato. Rigenero...");
-            File.Delete(path);
-            File.WriteAllLines(path, [playerHuman.ToString(), playerPC.ToString(), launch.ToString(), human.ToString(), PC.ToString()]);
-        }
-        catch (Exception ex) when (ex is IOException ||
-                                    ex is NotSupportedException ||
-                                    ex is DirectoryNotFoundException)
-        {
-            Console.WriteLine("Problemi di accesso al file. Rigenero...");
-            File.Delete(path);
-            File.WriteAllLines(path, [playerHuman.ToString(), playerPC.ToString(), launch.ToString(), human.ToString(), PC.ToString()]);
-        }
-        catch (FileNotFoundException) //Creo file inizializzato a zero se non presente
-        {
-            File.WriteAllLines(path, [playerHuman.ToString(), playerPC.ToString(), launch.ToString(), human.ToString(), PC.ToString()]);
-        }
-        catch
-        {
-            Console.WriteLine("Errore non previsto. Rigenero...");
-            File.Delete(path);
-            File.WriteAllLines(path, [playerHuman.ToString(), playerPC.ToString(), launch.ToString(), human.ToString(), PC.ToString()]);
-        }
 
-        // Inizio gioco
-
-        while (playerHuman > 0 && playerPC > 0) //Finchè un giocatore non vince
+        dynamic json;
+        int launchT = 0;
+        do //Finchè un giocatore non vince
         {
-            Console.WriteLine($"Launch number: {++launch}"); //Contatore turno
+            json = Leggo(path);
+            if (json.player==player) Console.WriteLine("Waiting for other player...");
+            while (json.player == player) 
+            {
+                
+                json = Leggo(path);
+                //Console.Clear();
+            }
+            json.launch = json.launch+1;
+            json.player = player;
+            Console.WriteLine($"Launch number: {json.launch}"); //Contatore turno
 
-            //launch Human
+            //launch P1
             Console.WriteLine("Hit a key for launch the dices...");
             Console.ReadKey();
-            int launch1Human = rng.Next(1, 7);
-            int launch2Human = rng.Next(1, 7);
-            int launchHuman = launch1Human + launch2Human;
+            int launch1 = rng.Next(1, 7);
+            int launch2 = rng.Next(1, 7);
+            launchT = launch1 + launch2;
             Console.Clear();
-            Console.WriteLine($"Yuo have got: {launch1Human} e {launch2Human}");
+            Console.WriteLine($"Yuo have got: {launch1} e {launch2}");
             //
 
-            //launch PC
-            int launch1PC = rng.Next(1, 7);
-            int launch2PC = rng.Next(1, 7);
-            int launchPC = launch1PC + launch2PC;
-            Console.WriteLine($"PC have got: {launch1PC} e {launch2PC}");
+            int launchP2 = json.launchT;
+            Console.WriteLine($"Other player last launch: {launchP2}");
             //
 
-            if (launchHuman < launchPC) //Se vince PC
+            if (launchT < launchP2) //Se vince P2
             {
-                Console.WriteLine("PC won!");
-                playerHuman -= launchPC - launchHuman; //Aggiorno punteggio
+                Console.WriteLine("Other player won!");
+                json.player1 -= launchP2 - launchT; //Aggiorno punteggio
             }
-            else if (launchHuman > launchPC) //Se vince umano
+            else if (launchT > launchP2) //Se vince umano
             {
                 Console.WriteLine("You won!");
-                playerPC -= launchHuman - launchPC; //Aggiorno punteggio
+                json.player2 -= launchT - launchP2; //Aggiorno punteggio
             }
             else Console.WriteLine("Even!"); //Se pari
 
-            File.WriteAllLines(path, [playerHuman.ToString(), playerPC.ToString(), launch.ToString(), human.ToString(), PC.ToString()]); // Salvo stato su file dopo ogni lancio
-
+            Genero(path, json);
+            int player1=json.player1;
+            int player2=json.player2;
             AnsiConsole.Write(new BarChart() //Visualizza barre punteggio parziale
                 .Width(60)
-                .AddItem("Player points:", playerHuman, Color.Yellow)
-                .AddItem("PC points:", playerPC, Color.Green));
+                .AddItem("Player1 points:", player1, Color.Yellow)
+                .AddItem("Player2 points:", player2, Color.Green));
             Console.WriteLine();
-        }
+        }while (json.player1 > 0 && json.player2 > 0);
 
-        if (playerHuman < playerPC) //Visualizza punteggio finale
+        if (json.player1 < json.player2) //Visualizza punteggio finale
         {
-            Console.WriteLine($"Hai perso!\nPC vince in {launch} lanci con un vantaggio di {playerPC - playerHuman} punti!");
-            PC++;
+            Console.WriteLine($"Hai perso!\nPlayer 2 vince in {json.launch} lanci con un vantaggio di {json.player2 - json.player1} punti!");
+            json.P2=json.P2+1;
         }
         else
         {
-            Console.WriteLine($"Hai vinto in {launch} tiri con un vantaggio di {playerHuman - playerPC} punti!");
-            human++;
+            Console.WriteLine($"Hai vinto in {json.launch} tiri con un vantaggio di {json.player1 - json.player2} punti!");
+            json.P1=json.P1+1;
         }
 
-        File.WriteAllLines(path, ["100", "100", "0", human.ToString(), PC.ToString()]); //Resetto partita e salvo complessivo
-        Console.WriteLine($"PC: {PC}\tUmano: {human}");
+        Genero(path, json);
+        Console.WriteLine($"Player 1: {json.P1}\tPlayer 2: {json.P2}");
+
+
+        void Genero(string path, dynamic json)
+        {
+            try
+            {
+                File.WriteAllText(path, JsonConvert.SerializeObject(json));
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Genero(path, json);
+            }
+        }
+
+        dynamic Leggo(string path)
+        {
+            int player1 = 100;
+            int player2 = 100;
+            int launch = 0;
+            int P1 = 0;
+            int P2 = 0;
+            int launchT = 0;
+            try
+            {
+                return JsonConvert.DeserializeObject(File.ReadAllText(path))!;
+            }
+            catch (Exception ex) when (ex is FormatException ||
+                                        ex is IndexOutOfRangeException ||
+                                        ex is OverflowException)
+            {
+                Console.WriteLine("Formato file errato. Rigenero...");
+            }
+            catch (Exception ex) when (ex is NotSupportedException ||
+                                        ex is DirectoryNotFoundException)
+            {
+                Console.WriteLine("Problemi di accesso al file. Rigenero...");
+            }
+            catch (FileNotFoundException) //Creo file inizializzato a zero se non presente
+            {
+                Console.WriteLine("File non trovato. Rigenero...");
+            }
+            catch (IOException)
+            {
+                Leggo(path);
+            }
+            catch
+            {
+                Console.WriteLine("Errore non previsto. Rigenero...");
+            }
+            dynamic json = new { player1, player2, launch, P1, P2, player, launchT };
+            Genero(path, json);
+            return json;
+        }
     }
 }
